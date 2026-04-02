@@ -22,6 +22,41 @@ public class ProductRequestDto {
         this.categoryIds = categoryIds;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String productName;
+        private BigDecimal price;
+        private LocalDate expirationDate;
+        private List<UUID> categoryIds;
+
+        public Builder productName(String productName) {
+            this.productName = productName;
+            return this;
+        }
+
+        public Builder price(BigDecimal price) {
+            this.price = price;
+            return this;
+        }
+
+        public Builder expirationDate(LocalDate expirationDate) {
+            this.expirationDate = expirationDate;
+            return this;
+        }
+
+        public Builder categoryIds(List<UUID> categoryIds) {
+            this.categoryIds = categoryIds;
+            return this;
+        }
+
+        public ProductRequestDto build() {
+            return new ProductRequestDto(productName, price, expirationDate, categoryIds);
+        }
+    }
+
     public String getProductName() {
         return productName;
     }

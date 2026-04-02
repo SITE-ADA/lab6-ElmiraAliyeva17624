@@ -9,9 +9,8 @@ import az.edu.ada.wm2.lab6.repository.CategoryRepository;
 import az.edu.ada.wm2.lab6.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,11 +32,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto product) {
+        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Price must be positive.");
+        }
         Product entity = productMapper.toEntity(product);
         entity.setId(UUID.randomUUID());
         if (product.getCategoryIds() != null && !product.getCategoryIds().isEmpty()) {
-            Set<Category> categories =
-                    new HashSet<>(categoryRepository.findAllById(product.getCategoryIds()));
+            List<Category> categories =
+                    new ArrayList<>(categoryRepository.findAllById(product.getCategoryIds()));
             entity.setCategories(categories);
         }
         Product saved = productRepository.save(entity);
@@ -60,14 +62,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto updateProduct(UUID id, ProductRequestDto product) {
+        if (product.getPrice() != null && product.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Price must be non-negative.");
+        }
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
         existing.setProductName(product.getProductName());
         existing.setPrice(product.getPrice());
         existing.setExpirationDate(product.getExpirationDate());
         if (product.getCategoryIds() != null) {
-            Set<Category> categories =
-                    new HashSet<>(categoryRepository.findAllById(product.getCategoryIds()));
+            List<Category> categories =
+                    new ArrayList<>(categoryRepository.findAllById(product.getCategoryIds()));
             existing.setCategories(categories);
         }
         Product saved = productRepository.save(existing);
@@ -76,10 +81,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(UUID id) {
-        if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found with id: " + id);
-        }
-        productRepository.deleteById(id);
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+        productRepository.delete(existing);
     }
 
     @Override

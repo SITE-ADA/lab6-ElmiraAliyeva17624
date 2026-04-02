@@ -10,6 +10,23 @@ public class CategoryRequestDto {
         this.name = name;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String name;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public CategoryRequestDto build() {
+            return new CategoryRequestDto(name);
+        }
+    }
+
     public String getName() {
         return name;
     }

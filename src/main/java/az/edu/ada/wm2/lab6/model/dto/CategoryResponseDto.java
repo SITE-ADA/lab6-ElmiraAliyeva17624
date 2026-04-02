@@ -14,6 +14,29 @@ public class CategoryResponseDto {
         this.name = name;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private UUID id;
+        private String name;
+
+        public Builder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public CategoryResponseDto build() {
+            return new CategoryResponseDto(id, name);
+        }
+    }
+
     public UUID getId() {
         return id;
     }

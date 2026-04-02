@@ -5,7 +5,6 @@ import az.edu.ada.wm2.lab6.model.Product;
 import az.edu.ada.wm2.lab6.model.dto.ProductRequestDto;
 import az.edu.ada.wm2.lab6.model.dto.ProductResponseDto;
 import java.util.List;
-import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,7 +18,10 @@ public interface ProductMapper {
     @Mapping(target = "categories", ignore = true)
     Product toEntity(ProductRequestDto dto);
 
-    default List<String> mapCategoriesToNames(Set<Category> categories) {
+    default List<String> mapCategoriesToNames(List<Category> categories) {
+        if (categories == null) {
+            return List.of();
+        }
         return categories.stream()
                 .map(Category::getName)
                 .toList();
